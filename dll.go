@@ -7,7 +7,8 @@ import (
 
 // Node obj
 type Node struct {
-	Value      interface{}
+	frequency  int
+	value      interface{}
 	next, prev *Node
 }
 
@@ -20,67 +21,72 @@ type List struct {
 var errOutOfBound = errors.New("ERROR - Index out of bound")
 
 // InsertAtFront of List
-func (l *List) InsertAtFront(v interface{}) {
+func (l *List) InsertAtFront(v interface{}) (n *Node) {
+	n = &Node{value: v}
 	if l.head == nil {
-		l.head = &Node{Value: v}
+		l.head = n
 	} else {
 		if l.tail == nil {
-			l.tail = &Node{Value: v}
+			l.tail = n
 			l.head.next = l.tail
 			l.tail.prev = l.head
 		} else {
 			prevHead := l.head
-			newHead := &Node{Value: v}
+			newHead := n
 			newHead.next = prevHead
 			prevHead.prev = newHead
 			l.head = newHead
 		}
 	}
 	l.size++
+	return n
 }
 
 // InsertAtBack of the list
-func (l *List) InsertAtBack(v interface{}) {
+func (l *List) InsertAtBack(v interface{}) (n *Node) {
+	n = &Node{value: v}
 	if l.head == nil {
-		l.head = &Node{Value: v}
+		l.head = n
 		l.tail = nil
 	} else {
 		if l.tail == nil {
-			l.tail = &Node{Value: v}
+			l.tail = n
 			l.head.next = l.tail
 			l.tail.prev = l.head
 		} else {
 			prevTail := l.tail
-			newTail := &Node{Value: v}
+			newTail := n
 			newTail.prev = prevTail
 			prevTail.next = newTail
 			l.tail = newTail
 		}
 	}
 	l.size++
+	return n
 }
 
 // InsertNode in the middle of the list
-func (l *List) InsertNode(v interface{}, currentNode, nextNode *Node) {
-	newNode := &Node{Value: v}
+func (l *List) InsertNode(v interface{}, currentNode, nextNode *Node) (n *Node) {
+	n = &Node{value: v}
 	if nextNode == nil {
-		l.tail = newNode
+		l.tail = n
 		l.tail.prev = currentNode
-		currentNode.next = newNode
+		currentNode.next = n
 	} else {
-		currentNode.next = newNode
-		nextNode.prev = newNode
-		newNode.prev = currentNode
-		newNode.next = nextNode
+		currentNode.next = n
+		nextNode.prev = n
+		n.prev = currentNode
+		n.next = nextNode
 	}
 	l.size++
+	return n
 }
 
 // InsertAfter the provide index
-func (l *List) InsertAfter(v interface{}, index int) (err error) {
+func (l *List) InsertAfter(v interface{}, index int) (n *Node, err error) {
 	if index > (l.size - 1) {
 		err = errOutOfBound
-		return err
+		return nil, err
 	}
 	currentNode := l.head
 	counter := 0
@@ -88,8 +94,8 @@ func (l *List) InsertAfter(v interface{}, index int) (err error) {
 		currentNode = currentNode.next
 		counter++
 	}
-	l.InsertNode(v, currentNode, currentNode.next)
-	return err
+	n = l.InsertNode(v, currentNode, currentNode.next)
+	return n, err
 }
 
 // RemoveFromFront of the list
@@ -110,14 +116,14 @@ func (l *List) RemoveFromBack() (v interface{}) {
 	if l.head != nil {
 		if l.tail != nil {
 			newTail := l.tail.prev
-			v = l.tail.Value
+			v = l.tail.value
 			l.tail = nil
 			if newTail != nil {
 				newTail.next = nil
 			}
 			l.tail = newTail
 		} else {
-			v = l.head.Value
+			v = l.head.value
 			l.head = nil
 		}
 		l.size--
@@ -150,23 +156,25 @@ func (l *List) RemoveNode(nodeToRemove *Node) {
 }
 
 // Remove based on the value
-func (l *List) Remove(v interface{}) {
+func (l *List) Remove(v interface{}) (n *Node) {
 	currentNode := l.head
 	for currentNode != nil {
-		currentValue := currentNode.Value
-		if currentValue == v {
+		currentvalue := currentNode.value
+		if currentvalue == v {
+			n = currentNode
 			l.RemoveNode(currentNode)
 		}
 		currentNode = currentNode.next
 	}
+	return n
 }
 
 // Find a Node based on a value
 func (l *List) Find(v interface{}) *Node {
 	currentNode := l.head
 	for currentNode != nil {
-		currentValue := currentNode.Value
-		if currentValue == v {
+		currentvalue := currentNode.value
+		if currentvalue == v {
 			return currentNode
 		}
 		currentNode = currentNode.next
@@ -177,8 +185,17 @@ func (l *List) Find(v interface{}) *Node {
 // Print the list
 func (l *List) Print() {
 	currentNode := l.head
+	fmt.Print("[")
 	for currentNode != nil {
-		fmt.Printf("%v ", currentNode.Value)
+		fmt.Printf("%v", currentNode.value)
 		currentNode = currentNode.next
+		if currentNode != nil {
+			fmt.Print("->")
+		}
 	}
+	fmt.Print("]\n")
+}
+
+func (l *List) isEmpty() bool {
+	return l.size == 0
 }

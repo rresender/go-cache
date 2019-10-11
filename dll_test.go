@@ -16,7 +16,7 @@ func TestDll(t *testing.T) {
 		t.Errorf("List size is not correct")
 	}
 
-	if item := list.Find("item1"); item != nil && item.Value != "item1" {
+	if item := list.Find("item1"); item != nil && item.value != "item1" {
 		t.Errorf("Item has not been found")
 	}
 
@@ -45,17 +45,17 @@ func TestDll(t *testing.T) {
 	list.InsertAtBack("item5")
 
 	item3 := "item3"
-	if item := list.Find(item3); item != nil && item.Value != item3 {
+	if item := list.Find(item3); item != nil && item.value != item3 {
 		t.Errorf("Item has not been found")
 	}
 
 	item4 := "item4"
-	if item := list.Find(item4); item != nil && item.Value != item4 {
+	if item := list.Find(item4); item != nil && item.value != item4 {
 		t.Errorf("Item has not been found")
 	}
 
 	item5 := "item5"
-	if item := list.Find(item5); item != nil && item.Value != item5 {
+	if item := list.Find(item5); item != nil && item.value != item5 {
 		t.Errorf("Item has not been found")
 	}
 
@@ -83,8 +83,8 @@ func TestDll(t *testing.T) {
 
 	list.InsertAfter("item8", 1)
 
-	if err := list.InsertAfter("item90", 10); err == nil {
-		t.Errorf("Error was not raised %v", err)
+	if _, err := list.InsertAfter("item90", 10); err == nil {
+		t.Errorf("Error was not raised err: %v", err)
 	}
 
 	if list.size != 5 {
